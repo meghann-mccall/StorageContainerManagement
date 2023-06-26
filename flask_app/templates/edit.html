@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Conex Solutions - Admin Dashboard - Edit Container {{ container.id }}</title>
+</head>
+<body>
+
+<div class="container p-3">
+
+    <!-- Page Header -->
+    <div class="row">
+        <div class="col"><h1 class="conexheader">Conex Solutions</h1></div>
+    </div>
+
+    <!-- Greeting -->
+    <div class="row">
+        <div class="col text-end"><h6>You are logged in as the administrator. <a href="/logout">Log Out</a>?</h6></div>
+    </div>
+
+    <!-- Edit Container Block -->
+    <div class="m-3 p-0 border border-2 border-dark">
+
+        <!-- Orange Table Header -->
+        <div class="colheader p-1 border-bottom border-2 border-dark">
+        <h2>Edit This Container:</h2>
+        </div>
+    
+        <!-- Main Content Block -->
+        <div class="p-3">
+
+            <!-- Area to Display Flashed Error Messages -->
+            {% with messages = get_flashed_messages(category_filter=["container"]) %}    
+            {% if messages %}                            
+                {% for message in messages %} 
+                    <p class="text-danger">{{message}}</p>                   
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Edit Container Form -->
+            <form action="/edit" enctype="multipart/form-data" method="POST">
+
+                <div class="row pb-1">
+                    <div class="col">
+                            Container Dimensions:
+                    </div>
+                    <div class="col">
+                        <label for="height" class="form-label">H:</label>
+                        <input type="text" name="height" size="2" value="{{ container.height }}"> ft
+                    </div>
+                    <div class="col">
+                        <label for="width" class="form-label">W:</label>
+                        <input type="text" name="width" size="2" value="{{ container.width }}"> ft
+                    </div>
+                    <div class="col">
+                        <label for="length" class="form-label">L:</label>
+                        <input type="text" name="length" size="2" value="{{ container.length }}"> ft
+                    </div>
+                </div>
+
+                <div class="row pb-1">
+                    <div class="col">
+                        <label for="forsale" class="form-label">For Sale?</label>
+                        <select name="forsale">
+                            {% if container.forsale == 1 %}
+                            <option value="0">No</option>
+                            <option value="1" selected>Yes</option>
+                            {% else %}
+                            <option value="0" selected>No</option>
+                            <option value="1">Yes</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="saleprice" class="form-label">Sale Price:</label>
+                        $<input type="text" name="saleprice" size="5" value="{{ container.saleprice }}">.00
+                    </div>
+                </div>
+
+                <div class="row pb-1">
+                    <div class="col">
+                        <label for="forrent" class="form-label">For Rent?</label>
+                        <select name="forrent">
+                            {% if container.forrent == 1 %}
+                            <option value="0">No</option>
+                            <option value="1" selected>Yes</option>
+                            {% else %}
+                            <option value="0" selected>No</option>
+                            <option value="1">Yes</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="rentprice" class="form-label">Rent Price:</label>
+                        $<input type="text" name="rentprice" size="5" value="{{ container.rentprice }}">.00 per month
+                    </div>
+                </div>
+            
+                <div class="row pb-1">
+                    <div class="col">
+                        <label for="customers_id" class="form-label">Currently Rented By:</label>
+                        <select name="customers_id">
+                            {% if container.customers_id == 0 %}
+                            <option value="0" selected>None</option>
+                                {% for customer in all_customers %}
+                                <option value="{{ customer.id }}">{{ customer.firstname }} {{ customer.lastname }}</option>
+                                {% endfor %}
+                            {% else %}
+                            <option value="0" selected>None</option>
+                                {% for customer in all_customers %}
+                                    {% if customer.id == container.customers_id %}
+                                    <option value="{{ customer.id }}" selected>{{ customer.firstname }} {{ customer.lastname }}</option>
+                                    {% else %}
+                                    <option value="{{ customer.id }}">{{ customer.firstname }} {{ customer.lastname }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col">
+
+                    </div>
+                </div>
+
+                <div class="row pb-1">
+                    <div class="col">
+                        <div>Current Container Photo:</div>
+                        <div class="text-center"><img src="/static/uploads/{{ container.containerimg }}" class="containerthumbnail"></div>
+                        <div class="mb-3"><label for="containerimg" class="form-label">Upload a New Photo:</label>
+                        <input type="file" name="containerimg" class="form-control"></div>
+                    </div>
+                    <div class="col">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea name="description" class="w-100">{{ container.description }}</textarea>
+                    </div>
+                </div>
+
+                <div class="row pb-1">
+                    <div class="col text-center">
+                        <input type="hidden" name="id" value="{{ container.id }}">
+                        <input type="submit" value="Edit Container" class="btn conexbtn"> <a href="/delete/{{ container.id }}" class="btn conexbtn">Delete Container</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--End Main Content Block-->
+
+    </div>
+    <!--End Edit Container Block-->
+
+    <div class="text-center">
+        <a href="/inventory" class="btn conexbtn">Back to Inventory List</a>
+    </div>
+
+</div>
+
+</body>
+</html>
